@@ -63,7 +63,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(3000, () => {
-  console.log("🚀 API OK : https://radio-42po.onrender.com/api/listeners");
+  console.log("🚀 API OK : https://radio-42po.onrender.com/listeners");
 });
 
 
