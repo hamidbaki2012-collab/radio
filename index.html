@@ -103,17 +103,39 @@ body {
   background: red;
 }
 
-.player-box {
-  background: rgba(255,255,255,0.1);
-  padding: 20px;
-  border-radius: 15px;
+.player-wrapper {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50px;
+      padding: 20px;
+      margin: 10px 0;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* BOUTON */
 #playBtn {
   display: block;
-  margin: 20px auto; /* ✅ centre horizontal */
+  margin: 20px auto;
+  font-size: 22px;
+  padding: 15px 40px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
   color: white;
+  background: #4fc3f7; /* BLEU CLAIR (PLAY par défaut) */
+  transition: 0.3s;
+}
+
+/* état PLAY (bleu clair) */
+#playBtn {
+  background: #4fc3f7;
+}
+
+/* état PAUSE (rouge) */
+#playBtn.active {
+  background: #ff4b4b;
+
 }
 
 #playBtn.active {
