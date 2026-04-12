@@ -60,7 +60,7 @@ async function loadStats() {
         : "En direct";
 
   } catch (e) {
-    listenersBox.textContent = "En direct";
+    listenersBox.textContent = "";
   }
 }
 
