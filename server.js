@@ -3,7 +3,7 @@ const https = require("https");
 
 // 🔗 SOURCES
 const SITE_URL = "https://gnews-radio.listen2myshow.com/";
-const SHOUTCAST = "http://212.84.160.3:9923";
+const SHOUTCAST = "http://212.84.160.3:9923/7.html";
 
 // ===== FETCH HTTPS =====
 function fetchHTTPS(url) {
