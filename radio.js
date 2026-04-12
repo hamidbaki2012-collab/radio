@@ -64,7 +64,7 @@ async function updateStats() {
 
     // 👥 AUDITEURS
     listenersBox.textContent =
-      data.listeners > 0 ? `${data.listeners} auditeurs` : "En direct";
+      data.listeners > 0 ? `${data.listeners} auditeurs` : "Live";
 
     // 🔥 STATUS (IMPORTANT)
     if (data.status === "LIVE") {
