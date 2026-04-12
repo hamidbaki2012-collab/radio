@@ -3,38 +3,51 @@ const volume = document.getElementById("volume");
 
 let isPlaying = false;
 
-// 🎧 PLAY
+// 🎧 PLAY / PAUSE (FIX)
 function togglePlay() {
+  if (!player) return;
+
   if (isPlaying) {
     player.pause();
     isPlaying = false;
-  } else {
-    player.play().catch(console.error);
-    isPlaying = true;
+    return;
   }
+
+  // ⚠️ IMPORTANT: NE PAS FAIRE player.load()
+  player.play()
+    .then(() => {
+      isPlaying = true;
+    })
+    .catch(err => {
+      console.error("PLAY ERROR:", err);
+    });
 }
 
 // 🔊 VOLUME
-volume.addEventListener("input", () => {
+if (volume) {
   player.volume = volume.value / 100;
-});
 
-console.log("RAW DATA:");
-console.log(text);
+  volume.addEventListener("input", () => {
+    player.volume = volume.value / 100;
+  });
+}
 
-// 👥 RADIO DATA
+// 👥 LECTURE SHOUTCAST
 async function getRadioData() {
   try {
-    const url = "http://212.84.160.3:9923/7.html";
+    const url = "https://api.allorigins.win/raw?url=" +
+      encodeURIComponent("http://212.84.160.3:9923/7.html?sid=1");
 
-    const res = await fetch(
-      "https://api.allorigins.win/raw?url=" + encodeURIComponent(url)
-    );
-
+    const res = await fetch(url);
     const text = await res.text();
 
-    // 🔥 DEBUG CORRECT
-    console.log("RAW DATA:", text);
+    console.log("RAW:", text); // DEBUG
+
+    // 🧠 sécurité
+    if (!text || text.includes("<html")) {
+      setOffline();
+      return;
+    }
 
     const parts = text.split(",");
 
@@ -46,24 +59,30 @@ async function getRadioData() {
     const status = document.getElementById("radioStatus");
     const dot = document.getElementById("statusDot");
 
-    if (!status || !dot) return;
-
     if (streamStatus === 1) {
       status.textContent = listeners > 0 ? "🟢 En direct" : "🟡 En attente";
       dot.style.background = listeners > 0 ? "#00ff88" : "#ffcc00";
     } else {
-      status.textContent = "🔴 Hors ligne";
-      dot.style.background = "#ff4b4b";
+      setOffline();
     }
 
-  } catch (err) {
-    console.error("ERROR:", err);
-    document.getElementById("listeners").textContent = "0";
+  } catch (e) {
+    console.error(e);
+    setOffline();
   }
 }
 
+// 🔴 OFFLINE SAFE
+function setOffline() {
+  document.getElementById("listeners").textContent = "0";
+  document.getElementById("radioStatus").textContent = "🔴 Hors ligne";
+  document.getElementById("statusDot").style.background = "#ff4b4b";
+}
+
+// 🔁 LOOP
 setInterval(getRadioData, 8000);
 getRadioData();
+
 
 
 
