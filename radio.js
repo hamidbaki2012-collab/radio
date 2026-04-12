@@ -30,7 +30,7 @@ function setLoading() {
 
 // 🟢 LIVE
 function setLive() {
-  statusText.textContent = "🟢 En direct";
+  statusText.textContent = "🟢 Live";
   statusDot.style.background = "#00ff88";
 }
 
