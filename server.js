@@ -1,7 +1,7 @@
 const http = require("http");
 const https = require("https");
 
-const STREAM = "http://212.84.160.3:9923/7.html?sid=1";
+const STREAM = "https://212.84.160.3:9923/7.html?sid=1";
 
 function fetch(url) {
   return new Promise((resolve) => {
