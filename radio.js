@@ -48,6 +48,24 @@ player.addEventListener("pause", () => {
   btn.textContent = "▶ Play";
 });
 
+const wave = document.getElementById("radioWave");
+
+// quand PLAY
+player.addEventListener("playing", () => {
+  wave.style.display = "flex";
+});
+
+// quand PAUSE
+player.addEventListener("pause", () => {
+  wave.style.display = "none";
+});
+
+// si erreur
+player.addEventListener("error", () => {
+  wave.style.display = "none";
+});
+
+
 // 📡 AUDITEURS (API)
 async function loadStats() {
   try {
