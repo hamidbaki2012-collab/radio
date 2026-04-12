@@ -51,7 +51,6 @@ async function getRadioData() {
   status.textContent = "🔴 Hors ligne";
   dot.style.background = "#ff4b4b";
   }
-}
 
 setInterval(getRadioData, 8000);
 getRadioData();
