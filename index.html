@@ -7,15 +7,12 @@
 
 <style>
 body {
-  font-family: -apple-system, BlinkMacSystemFont, Arial;
+  font-family: Arial;
   background-color: #1a2a6c;
   background-image:
     linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.5)),
-    url('background.jpg'),
-    url('background.png');
+    url('background.jpg');
   background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
   color: white;
   text-align: center;
   margin: 0;
@@ -25,23 +22,6 @@ body {
 .container {
   max-width: 480px;
   margin: auto;
-}
-
-.logo-container {
-  width: 160px;
-  height: 160px;
-  border-radius: 50%;
-  overflow: hidden;
-  margin: 20px auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo-container img {
-  width: 100%;
-  height: 100%;
-  fill: white;
 }
 
 .status {
@@ -61,84 +41,37 @@ body {
   background: rgba(255,255,255,0.1);
   padding: 20px;
   border-radius: 15px;
-  backdrop-filter: blur(10px);
 }
 
-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 20px;
+/* BOUTON */
+#playBtn {
   background: #00d2ff;
   color: white;
-  font-size: 16px;
-  cursor: pointer;
-}
-.playing {
-  background: #ff4b4b !important; /* rouge pause */
-}
-
-.not-playing {
-  background: #00d2ff !important; /* bleu play */
-}
-
-#playBtn {
-  color: white;
+  padding: 12px 30px;
+  border-radius: 30px;
   border: none;
-  padding: 10px 20px;
-  border-radius: 20px;
   cursor: pointer;
-  transition: 0.2s;
 }
 
-/* ▶ PLAY = BLEU */
-#playBtn.not-playing {
-  background: #00d2ff !important;
+#playBtn.active {
+  background: #ff4b4b;
 }
 
-/* ⏸ PAUSE = ROUGE */
-#playBtn.playing {
-  background: #ff4b4b !important;
-}
-
-  
 /* VOLUME */
 .volume-container {
   margin-top: 15px;
 }
-<div id="radioWave" class="radio-wave">
-  <div class="wave"></div>
-  <div class="wave"></div>
-  <div class="wave"></div>
-</div>
-  
+
 input[type=range] {
   width: 100%;
 }
-/* BOUTON UNIQUE */
-#playBtn {
-  background: #00d2ff !important;
-  color: white;
-  border: none;
-  padding: 14px 40px;
-  border-radius: 50px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
-}
 
-/* PAUSE = ROUGE */
-#playBtn.active {
-  background: #ff4b4b !important;
-}
-
-/* chaque onde */
+/* ONDE */
 .radio-wave {
   display: none;
   justify-content: center;
-  align-items: center;
   gap: 5px;
-  margin-top: 12px;
+  margin-top: 15px;
 }
 
 .radio-wave.active {
@@ -157,31 +90,21 @@ input[type=range] {
 .wave:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes waveAnim {
-  0%, 100% { transform: scaleY(0.4); opacity: 0.5; }
-  50% { transform: scaleY(1.2); opacity: 1; }
+  0%,100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1.2); }
 }
-
-<div class="volume-container">
-
-  <div class="radio-wave">
-  <div class="wave"></div>
-  <div class="wave"></div>
-  <div class="wave"></div>
-</div>
-
 </style>
 </head>
 
 <body>
 
+<div class="container">
 
   <h1>🎧 Radio Live</h1>
 
   <div class="status">
     <span id="statusDot" class="dot"></span>
-    <span id="radioStatus"></span>
-    <br><br>
-    👥 <span id="listenersBox"></span>
+    <span id="radioStatus">Hors ligne</span>
   </div>
 
   <div class="player-box">
@@ -192,47 +115,68 @@ input[type=range] {
 
     <br><br>
 
-   <button id="playBtn" onclick="togglePlay()">▶ Play</button>
+    <button id="playBtn">▶ Play</button>
 
     <div class="volume-container">
       🔊 Volume
       <input type="range" min="0" max="100" value="70" id="volume">
     </div>
+
+    <!-- ONDE -->
+    <div id="radioWave" class="radio-wave">
+      <div class="wave"></div>
+      <div class="wave"></div>
+      <div class="wave"></div>
+    </div>
+
   </div>
+
 </div>
-<script src="radio.js">
-  const radioWave = document.getElementById("radioWave");
 
-function showWave() {
-  if (radioWave) radioWave.style.display = "flex";
-}
+<script>
+const player = document.getElementById("player");
+const btn = document.getElementById("playBtn");
+const dot = document.getElementById("statusDot");
+const status = document.getElementById("radioStatus");
+const wave = document.getElementById("radioWave");
 
-function hideWave() {
-  if (radioWave) radioWave.style.display = "none";
-}
+// volume
+document.getElementById("volume").addEventListener("input", e => {
+  player.volume = e.target.value / 100;
+});
 
-player.addEventListener("play", showWave);
-player.addEventListener("playing", showWave);
-player.addEventListener("pause", hideWave);
-player.addEventListener("error", hideWave);
+// play / pause
+btn.addEventListener("click", () => {
+  if (player.paused) {
+    player.play();
+  } else {
+    player.pause();
+  }
+});
 
-// sécurité au chargement
-document.addEventListener("DOMContentLoaded", hideWave);
+// états audio
+player.addEventListener("playing", () => {
+  btn.classList.add("active");
+  btn.textContent = "⏸ Pause";
+  status.textContent = "En direct";
+  dot.style.background = "#00ff88";
+  wave.classList.add("active");
+});
 
-setTimeout(() => {
-  showWave();
-}, 2000);
-  
+player.addEventListener("pause", () => {
+  btn.classList.remove("active");
+  btn.textContent = "▶ Play";
+  status.textContent = "Hors ligne";
+  dot.style.background = "#ff4b4b";
+  wave.classList.remove("active");
+});
+
+player.addEventListener("error", () => {
+  status.textContent = "Erreur flux";
+  dot.style.background = "orange";
+  wave.classList.remove("active");
+});
 </script>
+
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
