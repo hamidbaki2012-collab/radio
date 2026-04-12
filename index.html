@@ -648,42 +648,34 @@ async function getRadioData() {
     const res = await fetch("https://TON-APP.onrender.com/api/listeners");
     const data = await res.json();
 
-    const listenersEl = document.getElementById("listeners");
+    document.getElementById("listeners").textContent = data.listeners;
+
     const statusEl = document.getElementById("radioStatus");
     const dot = document.getElementById("statusDot");
 
-    listenersEl.textContent = data.listeners;
-
-    // 🎯 GESTION STATUT
     if (data.status === "OFFLINE") {
       statusEl.textContent = "🔴 Hors ligne";
       dot.style.background = "#ff4b4b";
     }
     else if (data.status === "IDLE") {
-      statusEl.textContent = "🟡 En attente du live";
+      statusEl.textContent = "🟡 En attente";
       dot.style.background = "#ffcc00";
     }
-    else if (data.status === "LIVE") {
+    else {
       statusEl.textContent = "🟢 En direct";
       dot.style.background = "#00ff88";
     }
 
   } catch (err) {
-    document.getElementById("radioStatus").textContent = "🔴 Erreur";
     document.getElementById("listeners").textContent = "0";
   }
 }
 
-// refresh auto
 setInterval(getRadioData, 10000);
 getRadioData();
 </script>
 
 }
-
-
-
-</script>
 
 </body>
 </html>
