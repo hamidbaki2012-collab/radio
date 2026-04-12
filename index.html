@@ -642,52 +642,42 @@ function extractTitle(text) {
   return match ? match[1].trim() : null;
 }
 
+<script>
 async function getRadioData() {
-  let html = await fetchText(`${SERVER}/7.html`);
-  let stats = await fetchText(`${SERVER}/stats?sid=1`);
+  try {
+    const res = await fetch("https://TON-APP.onrender.com/api/listeners");
+    const data = await res.json();
 
-  const status = document.getElementById("radioStatus");
-  const dot = document.getElementById("statusDot");
-  const listenersEl = document.getElementById("listeners");
-  const titleEl = document.getElementById("nowPlaying");
+    const listenersEl = document.getElementById("listeners");
+    const statusEl = document.getElementById("radioStatus");
+    const dot = document.getElementById("statusDot");
 
-  // 🔴 OFFLINE = aucune réponse
-  if (!html && !stats) {
-    status.textContent = "OFFLINE";
-    dot.style.background = "#ff4b4b";
-    listenersEl.textContent = "0";
-    if (titleEl) titleEl.textContent = "Aucun flux";
-    return;
-  }
+    listenersEl.textContent = data.listeners;
 
-  // 👥 AUDITEURS
-  const listeners = extractListeners(html);
+    // 🎯 GESTION STATUT
+    if (data.status === "OFFLINE") {
+      statusEl.textContent = "🔴 Hors ligne";
+      dot.style.background = "#ff4b4b";
+    }
+    else if (data.status === "IDLE") {
+      statusEl.textContent = "🟡 En attente du live";
+      dot.style.background = "#ffcc00";
+    }
+    else if (data.status === "LIVE") {
+      statusEl.textContent = "🟢 En direct";
+      dot.style.background = "#00ff88";
+    }
 
-  // 🎵 TITRE
-  const title = extractTitle(stats);
-
-  // 🟡 IDLE (serveur OK mais pas de DJ)
-  if (listeners === 0) {
-    status.textContent = "IDLE";
-    dot.style.background = "#ffcc00";
-    listenersEl.textContent = "0";
-    if (titleEl) titleEl.textContent = "En attente du DJ";
-    return;
-  }
-
-  // 🟢 LIVE
-  status.textContent = "LIVE";
-  dot.style.background = "#00ff88";
-  listenersEl.textContent = listeners;
-
-  if (titleEl) {
-    titleEl.textContent = title || "En direct";
+  } catch (err) {
+    document.getElementById("radioStatus").textContent = "🔴 Erreur";
+    document.getElementById("listeners").textContent = "0";
   }
 }
 
-// refresh toutes les 10s
+// refresh auto
 setInterval(getRadioData, 10000);
 getRadioData();
+</script>
 
 }
 
