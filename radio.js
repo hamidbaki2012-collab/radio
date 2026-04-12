@@ -1,39 +1,60 @@
 const player = document.getElementById("player");
-const volume = document.getElementById("volume");
+const statusText = document.getElementById("radioStatus");
+const statusDot = document.getElementById("statusDot");
+const listenersBox = document.getElementById("listenersBox");
 
 let isPlaying = false;
 
-// 🎧 PLAY / PAUSE (FIX)
+// 🎧 PLAY / PAUSE
 function togglePlay() {
-  if (!player) return;
-
   if (isPlaying) {
     player.pause();
-    isPlaying = false;
-    return;
-  }
-
-  // ⚠️ IMPORTANT: NE PAS FAIRE player.load()
-  player.play()
-    .then(() => {
-      isPlaying = true;
-    })
-    .catch(err => {
-      console.error("PLAY ERROR:", err);
+  } else {
+    player.play().catch(() => {
+      setOffline();
     });
+  }
 }
 
-// 🔊 VOLUME
-if (volume) {
-  player.volume = volume.value / 100;
-
-  volume.addEventListener("input", () => {
-    player.volume = volume.value / 100;
-  });
+// 🔴 OFFLINE
+function setOffline() {
+  statusText.textContent = "🔴 Hors ligne";
+  statusDot.style.background = "red";
 }
 
-// 👥 LECTURE SHOUTCAST
-async function getRadioData() {
+// 🟡 LOADING
+function setLoading() {
+  statusText.textContent = "🟡 Chargement...";
+  statusDot.style.background = "orange";
+}
+
+// 🟢 LIVE
+function setLive() {
+  statusText.textContent = "🟢 En direct";
+  statusDot.style.background = "#00ff88";
+}
+
+// 🎧 AUDIO EVENTS (TRÈS IMPORTANT)
+player.addEventListener("playing", () => {
+  isPlaying = true;
+  setLive();
+});
+
+player.addEventListener("pause", () => {
+  isPlaying = false;
+  setOffline();
+});
+
+player.addEventListener("waiting", () => {
+  setLoading();
+});
+
+player.addEventListener("error", () => {
+  setOffline();
+});
+
+// 📡 API FETCH
+async function updateStats() {
   try {
     const res = await fetch("https://radio-42po.onrender.com/api/listeners");
 
@@ -41,35 +62,23 @@ async function getRadioData() {
 
     const data = await res.json();
 
-    const status = document.getElementById("radioStatus");
-    const dot = document.getElementById("statusDot");
+    // 👥 AUDITEURS
+    listenersBox.textContent =
+      data.listeners > 0 ? `${data.listeners} auditeurs` : "En direct";
 
-    // 🔥 FORCE UI UPDATE ALWAYS
+    // 🔥 STATUS (IMPORTANT)
     if (data.status === "LIVE") {
-      status.textContent = "🟢 En direct";
-      dot.style.background = "#00ff88";
-    } 
-    else {
-      status.textContent = "🔴 Hors ligne";
-      dot.style.background = "#ff4b4b";
+      setLive();
+    } else {
+      setOffline();
     }
 
-    document.getElementById("listeners").textContent =
-      data.listeners > 0 ? data.listeners : "0";
-
   } catch (e) {
-    // 🔥 CRITICAL FIX
-    document.getElementById("radioStatus").textContent = "🔴 Hors ligne";
-    document.getElementById("listeners").textContent = "0";
-    document.getElementById("statusDot").style.background = "#ff4b4b";
+    setOffline();
+    listenersBox.textContent = "En direct";
   }
 }
 
-setInterval(getRadioData, 8000);
-getRadioData();
-
-
-
-
-
-
+// 🔁 LOOP
+setInterval(updateStats, 8000);
+updateStats();
