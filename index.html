@@ -650,10 +650,26 @@ async function getListeners() {
 
     const parts = text.split(",");
 
-    document.getElementById("listeners").textContent = parts[0] || 0;
+    const listeners = parseInt(parts[0]) || 0;
+    const streamStatus = parseInt(parts[1]) || 0;
 
-  } catch {
+    document.getElementById("listeners").textContent = listeners;
+
+    const statusEl = document.getElementById("radioStatus");
+    const dot = document.getElementById("statusDot");
+
+    if (streamStatus === 1) {
+      statusEl.textContent = listeners > 0 ? "🟢 En direct" : "🟡 En attente";
+      dot.style.background = listeners > 0 ? "#00ff88" : "#ffcc00";
+    } else {
+      statusEl.textContent = "🔴 Hors ligne";
+      dot.style.background = "#ff4b4b";
+    }
+
+  } catch (err) {
+    console.error(err);
     document.getElementById("listeners").textContent = "0";
+    document.getElementById("radioStatus").textContent = "🔴 Erreur";
   }
 }
 
