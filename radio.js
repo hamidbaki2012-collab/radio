@@ -1,18 +1,25 @@
 const player = document.getElementById("player");
+const volume = document.getElementById("volume");
+
 let isPlaying = false;
 
-// 🎧 PLAY / PAUSE
+// 🎧 PLAY
 function togglePlay() {
   if (isPlaying) {
     player.pause();
     isPlaying = false;
   } else {
-    player.play().catch(err => console.log(err));
+    player.play().catch(console.error);
     isPlaying = true;
   }
 }
 
-// 🔥 FETCH SHOUTCAST 7.HTML
+// 🔊 VOLUME
+volume.addEventListener("input", () => {
+  player.volume = volume.value / 100;
+});
+
+// 👥 RADIO DATA
 async function getRadioData() {
   try {
     const url = "http://212.84.160.3:9923/7.html";
@@ -48,14 +55,14 @@ async function getRadioData() {
       dot.style.background = "#ff4b4b";
     }
 
-  } catch (err) {
-    console.error("API error:", err);
+  } catch (e) {
+    console.error(e);
     document.getElementById("listeners").textContent = "0";
     document.getElementById("radioStatus").textContent = "🔴 hors ligne";
-    document.getElementById("statusDot").style.background = "red";
   }
 }
 
-// 🔁 AUTO REFRESH
+// 🔁 refresh
 setInterval(getRadioData, 8000);
 getRadioData();
+
