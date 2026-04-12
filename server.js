@@ -1,77 +1,63 @@
 const http = require("http");
+const https = require("https");
 
-const SHOUTCAST_URL = "http://212.84.160.3:9923/7.html";
+const SHOUTCAST = "http://212.84.160.3:9923";
 
-// ===== FETCH ROBUSTE =====
-function fetchData(url) {
+function fetch(url) {
   return new Promise((resolve) => {
+    const lib = url.startsWith("https") ? https : http;
 
-    const req = http.get(url, { timeout: 5000 }, (res) => {
+    lib.get(url, (res) => {
       let data = "";
-
-      res.on("data", chunk => data += chunk);
-
+      res.on("data", c => data += c);
       res.on("end", () => resolve(data));
-    });
-
-    req.on("error", () => resolve(null));
-    req.on("timeout", () => {
-      req.destroy();
-      resolve(null);
-    });
-
+    }).on("error", () => resolve(null));
   });
 }
 
-// ===== API =====
+function parse7html(text) {
+  if (!text) return { listeners: 0, status: 0 };
+
+  const parts = text.split(",");
+
+  return {
+    listeners: parseInt(parts[0]) || 0,
+    status: parseInt(parts[1]) || 0
+  };
+}
+
 const server = http.createServer(async (req, res) => {
 
   if (req.url === "/api/listeners") {
 
-    const data = await fetchData(SHOUTCAST_URL);
+    const data = await fetch(`${SHOUTCAST}/7.html?sid=1`);
 
-    // 🔴 DEBUG
-    if (!data) {
-      return send(res, {
-        status: "OFFLINE",
-        listeners: 0,
-        title: "Inaccessible depuis Render"
-      });
+    const parsed = parse7html(data);
+
+    let state = "OFFLINE";
+
+    if (parsed.status === 1) {
+      state = parsed.listeners > 0 ? "LIVE" : "IDLE";
     }
 
-    const parts = data.split(",");
-
-    const listeners = parseInt(parts[0]) || 0;
-    const streamStatus = parseInt(parts[1]) || 0;
-    const title = parts[6] || "";
-
-    let status = "OFFLINE";
-
-    if (streamStatus === 1) {
-      status = listeners > 0 ? "LIVE" : "IDLE";
-    }
-
-    send(res, {
-      status,
-      listeners,
-      title
+    res.writeHead(200, {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
     });
 
-  } else {
-    res.end("API OK");
+    return res.end(JSON.stringify({
+      status: state,
+      listeners: parsed.listeners
+    }));
   }
-});
 
-// ===== RESPONSE =====
-function send(res, data) {
-  res.setHeader("Content-Type", "application/json");
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.end(JSON.stringify(data));
-}
+  res.end("OK");
+});
 
 server.listen(3000, () => {
-  console.log("🚀 API running");
+  console.log("API RUN http://localhost:3000/api/listeners");
 });
+
 
 
 
