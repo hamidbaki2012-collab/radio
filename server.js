@@ -1,33 +1,23 @@
 const http = require("http");
 
-const SHOUTCAST_JSON = "http://212.84.160.3:9923/stats?json=1";
+const SHOUTCAST_URL = "http://212.84.160.3:9923/7.html";
 
-// ===== FETCH JSON =====
-function fetchJSON(url) {
+function fetchData(url) {
   return new Promise((resolve) => {
     http.get(url, (res) => {
       let data = "";
-
-      res.on("data", (chunk) => data += chunk);
-      res.on("end", () => {
-        try {
-          resolve(JSON.parse(data));
-        } catch {
-          resolve(null);
-        }
-      });
+      res.on("data", chunk => data += chunk);
+      res.on("end", () => resolve(data));
     }).on("error", () => resolve(null));
   });
 }
 
-// ===== API =====
 const server = http.createServer(async (req, res) => {
 
   if (req.url === "/api/listeners") {
 
-    const data = await fetchJSON(SHOUTCAST_JSON);
+    const data = await fetchData(SHOUTCAST_URL);
 
-    // 🔴 SERVEUR INJOIGNABLE
     if (!data) {
       return send(res, {
         status: "OFFLINE",
@@ -36,40 +26,39 @@ const server = http.createServer(async (req, res) => {
       });
     }
 
-    const listeners = data.listeners || 0;
-    const streamStatus = data.streamstatus; // 🔥 clé importante
-    const title = data.songtitle || "";
+    const parts = data.split(",");
+
+    const listeners = parseInt(parts[0]) || 0;
+    const streamStatus = parseInt(parts[1]) || 0;
+    const title = parts[6] || "";
 
     let status = "OFFLINE";
 
     if (streamStatus === 1) {
       status = listeners > 0 ? "LIVE" : "IDLE";
-    } else {
-      status = "OFFLINE";
     }
 
     send(res, {
       status,
       listeners,
-      title: title || (status === "LIVE" ? "En direct" : "Aucun flux")
+      title: title || "En direct"
     });
   }
 
   else {
-    res.end("API Radio OK");
+    res.end("API OK");
   }
 });
 
-// ===== RESPONSE =====
 function send(res, data) {
   res.setHeader("Content-Type", "application/json");
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.end(JSON.stringify(data));
 }
 
-// ===== START =====
 server.listen(3000, () => {
-  console.log("🚀 API prête : /api/listeners");
+  console.log("🚀 API prête");
 });
+
 
 
