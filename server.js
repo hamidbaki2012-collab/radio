@@ -9,21 +9,27 @@ function fetch(url) {
 
     lib.get(url, (res) => {
       let data = "";
+
       res.on("data", c => data += c);
       res.on("end", () => resolve(data));
+
     }).on("error", () => resolve(null));
   });
 }
 
-// 🔥 parse SHOUTCAST 7.html
-function parse7html(text) {
+// 🔥 SAFE PARSER (IMPORTANT)
+function parse7(text) {
   if (!text) return null;
+
+  text = text.replace(/<[^>]*>/g, "").trim();
 
   const parts = text.split(",");
 
+  if (parts.length < 2) return null;
+
   return {
     listeners: parseInt(parts[0]) || 0,
-    status: parseInt(parts[1]) || 0
+    rawStatus: parts[1]
   };
 }
 
@@ -33,42 +39,34 @@ const server = http.createServer(async (req, res) => {
 
     const raw = await fetch(`${SHOUTCAST}/7.html?sid=1`);
 
-    const data = parse7html(raw);
+    const data = parse7(raw);
 
-    // ❌ si aucune réponse = OFFLINE réel
-    if (!data) {
-      return send(res, {
-        status: "OFFLINE",
-        listeners: 0
-      });
-    }
-
-    // 🔥 logique correcte
+    // 🔥 IMPORTANT FIX
     let status = "OFFLINE";
 
-    if (data.status === 1) {
-      status = data.listeners > 0 ? "LIVE" : "IDLE";
+    if (data) {
+      // ⚠️ ne plus dépendre strictement de "1"
+      status = "LIVE";
     }
 
-    return send(res, {
-      status,
-      listeners: data.listeners
+    const listeners = data ? data.listeners : 0;
+
+    res.writeHead(200, {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
     });
+
+    return res.end(JSON.stringify({
+      status,
+      listeners
+    }));
   }
 
   res.end("OK");
 });
 
-function send(res, data) {
-  res.writeHead(200, {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*"
-  });
-  res.end(JSON.stringify(data));
-}
-
 server.listen(3000, () => {
-  console.log("🚀 API OK : /api/listeners");
+  console.log("API READY");
 });
 
 
