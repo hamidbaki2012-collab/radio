@@ -34,41 +34,33 @@ if (volume) {
 
 // 👥 LECTURE SHOUTCAST
 async function getRadioData() {
-  try {
-    const res = await fetch("https://radio-42po.onrender.com/api/listeners");
-    const data = await res.json();
+  const res = await fetch("https://radio-42po.onrender.com/api/listeners");
+  const data = await res.json();
 
-    console.log("API:", data);
+  document.getElementById("listeners").textContent = data.listeners;
 
-    document.getElementById("listeners").textContent = data.listeners;
+  const status = document.getElementById("radioStatus");
+  const dot = document.getElementById("statusDot");
 
-    const status = document.getElementById("radioStatus");
-    const dot = document.getElementById("statusDot");
+  if (data.status === "LIVE") {
+    status.textContent = "🟢 En direct";
+    dot.style.background = "#00ff88";
+  }
 
-    if (data.status === "LIVE") {
-      status.textContent = "🟢 En direct";
-      dot.style.background = "#00ff88";
-    }
+  else if (data.status === "IDLE") {
+    status.textContent = "🟡 En attente";
+    dot.style.background = "#ffcc00";
+  }
 
-    else if (data.status === "IDLE") {
-      status.textContent = "🟡 En attente";
-      dot.style.background = "#ffcc00";
-    }
-
-    else {
-      status.textContent = "🔴 Hors ligne";
-      dot.style.background = "#ff4b4b";
-    }
-
-  } catch (e) {
-    console.error(e);
-    document.getElementById("listeners").textContent = "0";
-    document.getElementById("radioStatus").textContent = "🔴 Hors ligne";
+  else {
+    status.textContent = "🔴 Hors ligne";
+    dot.style.background = "#ff4b4b";
   }
 }
 
 setInterval(getRadioData, 8000);
 getRadioData();
+
 
 
 
