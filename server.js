@@ -115,6 +115,26 @@ function send(res, data) {
   res.end(JSON.stringify(data));
 }
 
+if (req.url === "/api/listeners") {
+
+  let raw = await fetch(`${SHOUTCAST}/7.html?sid=1`);
+
+  let data = parse7(raw);
+
+  // 🔥 FORCE RESPONSE EVEN IF NULL
+  if (!data) {
+    return send(res, {
+      status: "OFFLINE",
+      listeners: 0
+    });
+  }
+
+  return send(res, {
+    status: "LIVE",
+    listeners: data.listeners || 0
+  });
+}
+
 // ===== LANCEMENT =====
 const PORT = process.env.PORT || 3000;
 
