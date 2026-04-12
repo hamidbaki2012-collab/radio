@@ -1,80 +1,35 @@
 const http = require("http");
-const https = require("https");
 
-// 🔗 SOURCES
-const SITE_URL = "https://gnews-radio.listen2myshow.com/";
-const SHOUTCAST = "http://212.84.160.3:9923";
+// 🔗 SHOUTCAST JSON DIRECT
+const SHOUTCAST_JSON = "http://212.84.160.3:9923/stats?json=1";
 
-// ===== FETCH HTTPS =====
-function fetchHTTPS(url) {
-  return new Promise((resolve) => {
-    https.get(url, (res) => {
-      let data = "";
-
-      res.on("data", (chunk) => data += chunk);
-      res.on("end", () => resolve(data));
-    }).on("error", () => resolve(null));
-  });
-}
-
-// ===== FETCH HTTP =====
-function fetchHTTP(url) {
+// ===== FETCH JSON =====
+function fetchJSON(url) {
   return new Promise((resolve) => {
     http.get(url, (res) => {
       let data = "";
 
       res.on("data", (chunk) => data += chunk);
-      res.on("end", () => resolve(data));
+      res.on("end", () => {
+        try {
+          resolve(JSON.parse(data));
+        } catch {
+          resolve(null);
+        }
+      });
     }).on("error", () => resolve(null));
   });
-}
-
-// ===== EXTRACTION AUDITEURS (ULTRA FIABLE) =====
-function extractListeners(text) {
-  if (!text) return 0;
-
-  text = text.replace(/<[^>]*>/g, "");
-
-  // 🎯 cas listen2myradio
-  let match = text.match(/(\d+)\s*listener/i);
-  if (match) return parseInt(match[1]);
-
-  // 🎯 fallback shoutcast
-  let numbers = text.match(/\d+/g);
-  if (numbers && numbers.length > 1) {
-    return parseInt(numbers[1]);
-  }
-
-  return 0;
-}
-
-// ===== EXTRACTION TITRE =====
-function extractTitle(text) {
-  if (!text) return null;
-
-  text = text.replace(/<[^>]*>/g, "");
-
-  let match =
-    text.match(/Stream Title[^:]*:\s*(.*)/i) ||
-    text.match(/Current Song[^:]*:\s*(.*)/i);
-
-  return match ? match[1].trim() : null;
 }
 
 // ===== API =====
 const server = http.createServer(async (req, res) => {
 
-  if (req.url === "/api") {
+  if (req.url === "/api/listeners") {
 
-    // 🔥 priorité : page officielle
-    const siteHTML = await fetchHTTPS(SITE_URL);
+    const data = await fetchJSON(SHOUTCAST_JSON);
 
-    // 🔁 fallback : shoutcast
-    const shoutHTML = await fetchHTTP(`${SHOUTCAST}/7.html`);
-    const stats = await fetchHTTP(`${SHOUTCAST}/stats?sid=1`);
-
-    // 🔴 OFFLINE TOTAL
-    if (!siteHTML && !shoutHTML) {
+    // 🔴 OFFLINE
+    if (!data) {
       return send(res, {
         status: "OFFLINE",
         listeners: 0,
@@ -82,25 +37,16 @@ const server = http.createServer(async (req, res) => {
       });
     }
 
-    // 👥 AUDITEURS (priorité site)
-    let listeners = extractListeners(siteHTML);
+    const listeners = data.listeners || 0;
+    const title = data.songtitle || "En direct";
 
-    if (!listeners && shoutHTML) {
-      listeners = extractListeners(shoutHTML);
-    }
-
-    // 🎵 TITRE
-    const title = extractTitle(stats);
-
-    // 🎯 STATUS
     let status = "IDLE";
-
     if (listeners > 0) status = "LIVE";
 
     send(res, {
       status,
       listeners,
-      title: title || (status === "LIVE" ? "En direct" : "En attente")
+      title
     });
   }
 
@@ -109,13 +55,15 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-// ===== RESPONSE JSON =====
+// ===== RESPONSE =====
 function send(res, data) {
   res.setHeader("Content-Type", "application/json");
+  res.setHeader("Access-Control-Allow-Origin", "*"); // 🔥 important pour ton site GitHub
   res.end(JSON.stringify(data));
 }
 
-// ===== LANCEMENT =====
+// ===== START =====
 server.listen(3000, () => {
-  console.log("🚀 API PRO prête : http://localhost:3000/api");
+  console.log("🚀 API prête : http://localhost:3000/api/listeners");
 });
+
