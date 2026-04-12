@@ -2,686 +2,107 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>📻 Radio Bahá'ie</title>
-  
-  <!-- ===== FAVICONS & ICÔNES ===== -->
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon.ico">
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-  
-  <!-- ===== PWA MANIFEST ===== -->
-  <link rel="manifest" href="manifest.json">
-  
-  <!-- ===== MÉTADONNÉES POUR MOBILE ===== -->
-  <meta name="theme-color" content="#1a2a6c">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Ma Radio FM">
-  <meta name="mobile-web-app-capable" content="yes">
-  
-  <!-- ===== RESTE DU HEAD ===== -->
-</head>
-  
-   <style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📻 Radio Live</title>
+
+  <style>
     body {
-     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-      background-color: #1a2a6c;
-      background-image: 
-        linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)),
-        url('background.jpg'),
-        url('background.png');
-      background-size: cover;
-      background-position: center center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      color: #fff;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
+      font-family: Arial;
+      background: #1a2a6c;
+      color: white;
       text-align: center;
+      margin: 0;
+      padding: 20px;
     }
 
     .container {
+      max-width: 500px;
+      margin: auto;
+    }
+
+    .logo {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: white;
+      margin: 20px auto;
+      overflow: hidden;
+    }
+
+    .logo img {
       width: 100%;
-      max-width: 480px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-    }
-
-    /* MARQUEE */
-    .marquee {
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
-
-    /* LOGO */
-    
-    .logo-container {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: white;
-  margin: 30px auto;
-  display: flex;
-  align-items: left;
-  justify-content: left;
-  overflow: hidden;
-  border: 3px solid rgba(255,255,255,0.3);
-      }
-
-   .logo-container img {
-   width: 100%;
-   height: 100%;
-   object-fit: cover;
-    }
-   
-    h1 {
-      text-align: center;
-      margin: 10px 0 20px;
+      height: 100%;
+      object-fit: cover;
     }
 
     .status {
-      text-align: center;
-      margin-bottom: 10px;
+      margin: 15px 0;
+      font-size: 16px;
     }
 
-    .bottom {
-      margin-top: auto;
-      padding-bottom: 60px; /* ⬆ remonte légèrement le bas */
-    }
-
-    .player-wrapper {
-      width: 100%;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 20px;
-      margin: 10px 0;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    /* Conteneur du bouton play + volume */
-    .player-controls {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 15px;
-    }
-
-    .play-btn {
-      background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-      color: white;
-      border: none;
-      border-radius: 50px;
-      padding: 14px 40px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .play-btn:active {
-      transform: scale(0.98);
-    }
-
-    .play-btn.playing {
-      background: linear-gradient(135deg, #ff416c, #ff4b2b);
-    }
-
-    /* Curseur de volume vertical */
-    .volume-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .volume-icon {
-      font-size: 1.2rem;
-      color: rgba(255, 255, 255, 0.9);
-    }
-
-    .volume-slider-wrapper {
-      position: relative;
-      width: 40px;
-      height: 120px;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 20px;
-      display: flex;
-      align-items: flex-end;
-      padding: 5px;
-      border: 2px solid rgba(255, 255, 255, 0.2);
-    }
-
-    /* Barre de progression du volume */
-    .volume-fill {
-      position: absolute;
-      bottom: 5px;
-      left: 5px;
-      right: 5px;
-      background: linear-gradient(180deg, #00d2ff, #3a7bd5);
-      border-radius: 15px;
-      height: 50%; /* Sera mis à jour par JS */
-      transition: height 0.1s ease;
-      pointer-events: none;
-    }
-
-    /* Input range vertical */
-    .volume-slider {
-      position: relative;
-      width: 40px;
-      height: 120px;
-      -webkit-appearance: slider-vertical; /* Safari/Chrome */
-      appearance: slider-vertical;
-      background: transparent;
-      cursor: pointer;
-      z-index: 2;
-    }
-
-    /* Style personnalisé pour Firefox */
-    @-moz-document url-prefix() {
-      .volume-slider {
-        writing-mode: bt-lr;
-        -webkit-appearance: none;
-      }
-    }
-
-
-
-    /* Pour les navigateurs qui ne supportent pas slider-vertical */
-    .volume-slider-wrapper input[type="range"] {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 120px;
-      height: 40px;
-      background: transparent;
-      transform: rotate(-90deg);
-      transform-origin: center;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      margin-left: -60px;
-      margin-top: -20px;
-      z-index: 2;
-      cursor: pointer;
-    }
-
-    .volume-slider-wrapper input[type="range"]::-webkit-slider-runnable-track {
-      width: 100%;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .volume-slider-wrapper input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 20px;
-      height: 20px;
-      background: #fff;
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-      margin-top: -6px;
-    }
-
-    .volume-slider-wrapper input[type="range"]::-moz-range-track {
-      width: 100%;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .volume-slider-wrapper input[type="range"]::-moz-range-thumb {
-      width: 20px;
-      height: 20px;
-      background: #fff;
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-      border: none;
-    }
-
-    .volume-value {
-      font-size: 0.85rem;
-      color: rgba(255, 255, 255, 0.8);
-      font-weight: 500;
-      min-width: 35px;
-    }
-
-    audio {
-      width: 100%;
-      height: 50px;
-      outline: none;
-    }
-
-    .status {
-      font-size: 0.9rem;
-      margin: 10px 0;
-      color: rgba(255, 255, 255, 0.9);
-      min-height: 20px;
-    }
-
-    .live-indicator {
-      display: inline-block;
+    .dot {
       width: 10px;
       height: 10px;
-      background: #00ff88;
       border-radius: 50%;
+      display: inline-block;
       margin-right: 6px;
-      animation: pulse 1.5s infinite;
-      vertical-align: middle;
-      }
+      background: red;
+    }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-      }
+    .player {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+    }
 
-    .footer {
-      margin-top: 200px;
-      font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.6);
-      }
-
-    @media (max-height: 700px) {
-      .logo-container {
-        width: 140px;
-        height: 140px;
-        margin: 15px auto;
-      }
-	  }
-	  
-      h1 {
-        font-size: 1.3rem;
-        margin: 10px 0 20px;
-      }
-      .volume-slider-wrapper {
-        height: 100px;
-      }
-      .volume-slider-wrapper input[type="range"] {
-        width: 100px;
-        margin-left: -50px;
-      }
-
-    @media (max-width: 400px) {
-      .player-controls {
-        flex-direction: column;
-        gap: 15px;
-       }
-      }
-      .volume-container {
-        flex-direction: row;
-        gap: 10px;
-      }
-      .volume-slider-wrapper {
-        width: 120px;
-        height: 40px;
-      }
-      .volume-slider-wrapper input[type="range"] {
-        transform: rotate(0deg);
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        top: 0;
-        left: 0;
-      }
-  
-/* TEXTE DÉFILANT */
-.defilement {
-  overflow: hidden;
-  white-space: nowrap;
-  width: 100%;
-  margin-bottom: 10px;
-}
-
-.defilement span {
-  display: inline-block;
-  padding-left: 100%;
-  animation: scroll 12s linear infinite;
-}
-
-@keyframes scroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
-}
-.dashboard {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 15px;
-  font-size: 14px;
-  background: rgba(255,255,255,0.08);
-  padding: 10px;
-  border-radius: 12px;
-}
-@media (max-width: 500px) {
-  .dashboard {
-    flex-direction: column;
-    gap: 8px;
-    text-align: center;
-  }
-
-  .status {
-    font-size: 14px;
-  }
-}
-
-.dashboard {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 15px;
-  font-size: 14px;
-  background: rgba(255,255,255,0.08);
-  padding: 10px;
-  border-radius: 12px;
-}
-
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      background: #00d2ff;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
   </style>
+</head>
+
 <body>
 
-  <div class="container">
-    
-     <div class="defilement" scrollamount="1">
-      <span>Bienvenue sur notre chaine radio privée expérimentale. Heureux de vous avoir parmi nos fidèles auditeurs. Soyez à l'écoute durant cette phase de tests tous les soirs de 19h jusqu'à 22h.
-	  </span>
-      </div>
-   
-   <!-- Logo -->
-    <div class="logo-container">
-      <img src="logo.png" alt="Logo Radio" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-      <div class="logo-placeholder" style="display: none;">📻<br>Votre Logo<br>180×180px</div>
-    </div>
+<div class="container">
 
-    <h1>🎧 Chaîne radio privée</h1>
- 
+  <div class="logo">
+    <img src="logo.png" />
+  </div>
 
-    <div class="status">
- <span class="live-indicator" id="statusDot"></span>
- <span id="radioStatus">Chargement...</span>
- 👥 <span id="listeners">0</span> en écoute live
+  <h1>🎧 Radio Live</h1>
 
-</div>
+  <div class="status">
+    <span id="statusDot" class="dot"></span>
+    <span id="radioStatus">Chargement...</span>
+    <br><br>
+    👥 <span id="listeners">0</span> auditeurs
+  </div>
 
+  <div class="player">
 
-    <div class="player-wrapper">
-      <audio id="radioPlayer" preload="none">
-        <source src="https://fpsnew2.listen2myradio.com:2199/listen.php?ip=212.84.160.3&port=9923&type=s1" type="audio/mpeg">
-        Votre navigateur ne supporte pas la lecture audio.
-      </audio>
-      
-      <!-- Contrôles : Bouton Play + Volume -->
-      <div class="player-controls">
-        <button class="play-btn" id="playToggle" onclick="togglePlay()">
-          <span id="playIcon">▶</span> <span id="playText">Écouter</span>
-        </button>
-        
-        <!-- Curseur de volume vertical -->
-        <div class="volume-container">
-          <span class="volume-icon" id="volumeIcon">🔊</span>
-          <div class="volume-slider-wrapper">
-            <div class="volume-fill" id="volumeFill"></div>
-            <input type="range" 
-                   id="volumeSlider" 
-                   class="volume-slider" 
-                   min="0" 
-                   max="100" 
-                   value="70" 
-                   orient="vertical"
-                   oninput="setVolume(this.value)">
-          </div>
-          <span class="volume-value" id="volumeValue">70%</span>
-        </div>
-      </div>
-    </div>
+    <audio id="player" preload="none">
+      <source src="https://fpsnew2.listen2myradio.com:2199/listen.php?ip=212.84.160.3&port=9923&type=s1">
+    </audio>
 
-    <div style="display: none;">
-      <audio id="hiddenPlayer">
-        <source src="https://fpsnew2.listen2myradio.com:2199/listen.php?ip=212.84.160.3&port=9923&type=s1">
-      </audio>
-     </div>
+    <br><br>
 
-    <div class="footer">
-       Hamid B.© 2026 Écoutez votre radio préférée en direct partout dans le monde🌍
-    </div>
+    <button onclick="togglePlay()">▶ / ⏸ Play</button>
 
   </div>
 
-  <script>
-    const player = document.getElementById('radioPlayer');
-    const playBtn = document.getElementById('playToggle');
-    const playIcon = document.getElementById('playIcon');
-    const playText = document.getElementById('playText');
-    const volumeSlider = document.getElementById('volumeSlider');
-    const volumeFill = document.getElementById('volumeFill');
-    const volumeValue = document.getElementById('volumeValue');
-    const volumeIcon = document.getElementById('volumeIcon');
-    let isPlaying = false;
+</div>
 
-    // Initialiser le volume à 70%
-    player.volume = 0.7;
-
-    function togglePlay() {
-      if (isPlaying) {
-        player.pause();
-        playIcon.textContent = '▶';
-        playText.textContent = 'Écouter';
-        playBtn.classList.remove('playing');
-      } else {
-        player.load();
-        player.play().then(() => {
-          playIcon.textContent = '⏸';
-          playText.textContent = 'Pause';
-          playBtn.classList.add('playing');
-        }).catch(err => {
-          console.error('Erreur de lecture:', err);
-          alert('⚠️ Impossible de lire le flux. Vérifiez votre connexion.');
-        });
-      }
-      isPlaying = !isPlaying;
-    }
-
-    // Fonction pour régler le volume
-    function setVolume(value) {
-      const volume = value / 100;
-      player.volume = volume;
-      volumeFill.style.height = value + '%';
-      volumeValue.textContent = value + '%';
-      
-      // Changer l'icône selon le volume
-      if (value == 0) {
-        volumeIcon.textContent = '🔇';
-      } else if (value < 30) {
-        volumeIcon.textContent = '🔈';
-      } else if (value < 70) {
-        volumeIcon.textContent = '🔉';
-      } else {
-        volumeIcon.textContent = '🔊';
-      }
-    }
-
-    // Boutons volume + et - (optionnel, pour mobile)
-    function volumeUp() {
-      let newValue = parseInt(volumeSlider.value) + 10;
-      if (newValue > 100) newValue = 100;
-      volumeSlider.value = newValue;
-      setVolume(newValue);
-    }
-
-    function volumeDown() {
-      let newValue = parseInt(volumeSlider.value) - 10;
-      if (newValue < 0) newValue = 0;
-      volumeSlider.value = newValue;
-      setVolume(newValue);
-    }
-
-    player.addEventListener('error', function(e) {
-      console.error('Erreur audio:', e);
-      playIcon.textContent = '▶';
-      playText.textContent = 'Réessayer';
-      playBtn.classList.remove('playing');
-      isPlaying = false;
-    });
-
-    // Wake Lock pour empêcher l'écran de s'éteindre
-    let wakeLock = null;
-    async function requestWakeLock() {
-      if ('wakeLock' in navigator) {
-        try {
-          wakeLock = await navigator.wakeLock.request('screen');
-        } catch (err) {
-          console.log('Wake Lock non supporté:', err);
-        }
-      }
-    }
-
-    player.addEventListener('play', () => requestWakeLock());
-    player.addEventListener('pause', () => {
-      if (wakeLock) wakeLock.release();
-    });
-
-    // Initialiser l'affichage du volume au chargement
-    document.addEventListener('DOMContentLoaded', () => {
-      setVolume(volumeSlider.value);
-    });
-	
-async function getListeners() {
-  try {
-    const url = "http://212.84.160.3:9923/index.html?sid=1";
-
-    const response = await fetch(
-      "https://api.allorigins.win/raw?url=" + encodeURIComponent(url)
-    );
-
-    const text = await response.text();
-
-    // 🔍 cherche "Stream Status" ou nombres dans la page
-    let match =
-      text.match(/Current Listeners[^0-9]*([0-9]+)/i) ||
-      text.match(/([0-9]+)\s*auditeurs?/i) ||
-      text.match(/([0-9]+)/g);
-
-    if (match) {
-      document.getElementById("listeners").textContent = match[1] || match[0];
-    } else {
-      document.getElementById("listeners").textContent = "0";
-    }
-
-  } catch (error) {
-    document.getElementById("listeners").textContent = "0";
-  }
-}
-
-setInterval(getListeners, 15000);
-getListeners();
-	
-  </script>
-
-<script>
-
-// ===== COMPTEUR AUDITEURS =====
-const SERVER = "http://212.84.160.3:9923";
-
-async function fetchText(url) {
-  try {
-    const res = await fetch(url + "?t=" + Date.now());
-    return await res.text();
-  } catch {
-    return null;
-  }
-}
-
-// 🎧 EXTRACTION AUDITEURS (ULTRA FIABLE)
-function extractListeners(text) {
-  if (!text) return 0;
-
-  text = text.replace(/<[^>]*>/g, "");
-
-  // cas normal
-  let match = text.match(/(\d+)\s*auditeur/i);
-  if (match) return parseInt(match[1]);
-
-  // cas CSV shoutcast
-  let numbers = text.match(/\d+/g);
-  if (numbers && numbers.length > 1) {
-    return parseInt(numbers[1]);
-  }
-
-  return 0;
-}
-
-// 🎵 EXTRACTION TITRE
-function extractTitle(text) {
-  if (!text) return null;
-
-  text = text.replace(/<[^>]*>/g, "");
-
-  let match =
-    text.match(/Stream Title[^:]*:\s*(.*)/i) ||
-    text.match(/Current Song[^:]*:\s*(.*)/i);
-
-  return match ? match[1].trim() : null;
-}
-
-<script>
-async function getListeners() {
-  try {
-    const url = "http://212.84.160.3:9923/7.html";
-
-    const res = await fetch(
-      "https://api.allorigins.win/raw?url=" + encodeURIComponent(url)
-    );
-
-    const text = await res.text();
-    const parts = text.split(",");
-
-    const listeners = parseInt(parts[0]) || 0;
-    const streamStatus = parseInt(parts[1]) || 0;
-
-    document.getElementById("listeners").textContent = listeners;
-
-    const statusEl = document.getElementById("radioStatus");
-    const dot = document.getElementById("statusDot");
-
-    if (streamStatus === 1) {
-      statusEl.textContent = listeners > 0 ? "🟢 En direct" : "🟡 En attente";
-      dot.style.background = listeners > 0 ? "#00ff88" : "#ffcc00";
-    } else {
-      statusEl.textContent = "🔴 Hors ligne";
-      dot.style.background = "#ff4b4b";
-    }
-
-  } catch (err) {
-    document.getElementById("listeners").textContent = "0";
-  }
-}
-
-</script>
-
-}
+<script src="radio.js"></script>
 
 </body>
 </html>
-
 
 
 
