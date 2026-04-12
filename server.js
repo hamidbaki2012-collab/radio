@@ -1,7 +1,7 @@
 const http = require("http");
 const https = require("https");
 
-const STREAM_URL = "http://212.84.160.3:9923/;";
+const SHOUTCAST = "http://212.84.160.3:9923";
 
 function fetch(url) {
   return new Promise((resolve) => {
@@ -15,37 +15,62 @@ function fetch(url) {
   });
 }
 
+// 🔥 parse SHOUTCAST 7.html
+function parse7html(text) {
+  if (!text) return null;
+
+  const parts = text.split(",");
+
+  return {
+    listeners: parseInt(parts[0]) || 0,
+    status: parseInt(parts[1]) || 0
+  };
+}
+
 const server = http.createServer(async (req, res) => {
 
   if (req.url === "/api/listeners") {
 
-    // 🔥 test simple : stream accessible ?
-    const test = await fetch(STREAM_URL);
+    const raw = await fetch(`${SHOUTCAST}/7.html?sid=1`);
 
-    const isOnline = test !== null;
+    const data = parse7html(raw);
 
+    // ❌ si aucune réponse = OFFLINE réel
+    if (!data) {
+      return send(res, {
+        status: "OFFLINE",
+        listeners: 0
+      });
+    }
+
+    // 🔥 logique correcte
     let status = "OFFLINE";
 
-    if (isOnline) status = "LIVE";
+    if (data.status === 1) {
+      status = data.listeners > 0 ? "LIVE" : "IDLE";
+    }
 
-    res.writeHead(200, {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*"
-    });
-
-    return res.end(JSON.stringify({
+    return send(res, {
       status,
-      listeners: 0, // ⚠️ Listen2MyRadio bloque souvent cette info
-      title: isOnline ? "En direct" : "Serveur hors ligne"
-    }));
+      listeners: data.listeners
+    });
   }
 
   res.end("OK");
 });
 
+function send(res, data) {
+  res.writeHead(200, {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*"
+  });
+  res.end(JSON.stringify(data));
+}
+
 server.listen(3000, () => {
-  console.log("API OK");
+  console.log("🚀 API OK : /api/listeners");
 });
+
 
 
 
