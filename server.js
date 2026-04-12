@@ -1,30 +1,43 @@
+const https = require("https");
 const http = require("http");
 
 const SHOUTCAST_URL = "http://212.84.160.3:9923/7.html";
 
+// ===== FETCH SAFE (HTTP + HTTPS) =====
 function fetchData(url) {
   return new Promise((resolve) => {
-    http.get(url, (res) => {
+
+    const lib = url.startsWith("https") ? https : http;
+
+    lib.get(url, (res) => {
       let data = "";
+
       res.on("data", chunk => data += chunk);
       res.on("end", () => resolve(data));
+
     }).on("error", () => resolve(null));
+
   });
 }
 
+// ===== API =====
 const server = http.createServer(async (req, res) => {
 
   if (req.url === "/api/listeners") {
 
     const data = await fetchData(SHOUTCAST_URL);
 
+    // 🔴 DEBUG IMPORTANT
     if (!data) {
+      console.log("❌ Shoutcast unreachable");
       return send(res, {
         status: "OFFLINE",
         listeners: 0,
-        title: "Serveur hors ligne"
+        title: "Serveur inaccessible"
       });
     }
+
+    console.log("✅ DATA:", data);
 
     const parts = data.split(",");
 
@@ -41,15 +54,15 @@ const server = http.createServer(async (req, res) => {
     send(res, {
       status,
       listeners,
-      title: title || "En direct"
+      title
     });
-  }
 
-  else {
+  } else {
     res.end("API OK");
   }
 });
 
+// ===== RESPONSE =====
 function send(res, data) {
   res.setHeader("Content-Type", "application/json");
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -57,7 +70,7 @@ function send(res, data) {
 }
 
 server.listen(3000, () => {
-  console.log("🚀 API prête");
+  console.log("🚀 API RUNNING");
 });
 
 
