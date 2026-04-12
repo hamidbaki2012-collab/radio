@@ -1,21 +1,24 @@
-const https = require("https");
 const http = require("http");
 
 const SHOUTCAST_URL = "http://212.84.160.3:9923/7.html";
 
-// ===== FETCH SAFE (HTTP + HTTPS) =====
+// ===== FETCH ROBUSTE =====
 function fetchData(url) {
   return new Promise((resolve) => {
 
-    const lib = url.startsWith("https") ? https : http;
-
-    lib.get(url, (res) => {
+    const req = http.get(url, { timeout: 5000 }, (res) => {
       let data = "";
 
       res.on("data", chunk => data += chunk);
-      res.on("end", () => resolve(data));
 
-    }).on("error", () => resolve(null));
+      res.on("end", () => resolve(data));
+    });
+
+    req.on("error", () => resolve(null));
+    req.on("timeout", () => {
+      req.destroy();
+      resolve(null);
+    });
 
   });
 }
@@ -27,17 +30,14 @@ const server = http.createServer(async (req, res) => {
 
     const data = await fetchData(SHOUTCAST_URL);
 
-    // 🔴 DEBUG IMPORTANT
+    // 🔴 DEBUG
     if (!data) {
-      console.log("❌ Shoutcast unreachable");
       return send(res, {
         status: "OFFLINE",
         listeners: 0,
-        title: "Serveur inaccessible"
+        title: "Inaccessible depuis Render"
       });
     }
-
-    console.log("✅ DATA:", data);
 
     const parts = data.split(",");
 
@@ -70,8 +70,9 @@ function send(res, data) {
 }
 
 server.listen(3000, () => {
-  console.log("🚀 API RUNNING");
+  console.log("🚀 API running");
 });
+
 
 
 
