@@ -5,6 +5,24 @@ const listenersBox = document.getElementById("listenersBox");
 
 let isPlaying = false;
 
+const btn = document.getElementById("playBtn");
+
+function togglePlay() {
+  if (player.paused) {
+    player.play();
+
+    btn.classList.add("playing");
+    btn.classList.remove("not-playing");
+
+  } else {
+    player.pause();
+
+    btn.classList.add("not-playing");
+    btn.classList.remove("playing");
+  }
+}
+
+
 // 🎧 PLAY / PAUSE
 function togglePlay() {
   if (isPlaying) {
