@@ -147,10 +147,28 @@ document.getElementById("volume").addEventListener("input", e => {
 
 // play / pause
 btn.addEventListener("click", () => {
+
   if (player.paused) {
+
     player.play();
+
+    // ✅ FORCER L’AFFICHAGE
+    btn.classList.add("active");
+    btn.textContent = "⏸ Pause";
+    status.textContent = "En direct";
+    dot.style.background = "#00ff88";
+    wave.classList.add("active");
+
   } else {
+
     player.pause();
+
+    // ✅ CACHER
+    btn.classList.remove("active");
+    btn.textContent = "▶ Play";
+    status.textContent = "Hors ligne";
+    dot.style.background = "#ff4b4b";
+    wave.classList.remove("active");
   }
 });
 
