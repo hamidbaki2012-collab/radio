@@ -57,7 +57,7 @@ async function loadStats() {
     listenersBox.textContent =
       data.listeners > 0
         ? `${data.listeners} auditeurs`
-        : "En direct";
+        : "";
 
   } catch (e) {
     listenersBox.textContent = "";
