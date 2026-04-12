@@ -78,6 +78,26 @@ button {
 .not-playing {
   background: #00d2ff !important; /* bleu play */
 }
+
+#playBtn {
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* ▶ PLAY = BLEU */
+#playBtn.not-playing {
+  background: #00d2ff !important;
+}
+
+/* ⏸ PAUSE = ROUGE */
+#playBtn.playing {
+  background: #ff4b4b !important;
+}
+
   
 /* VOLUME */
 .volume-container {
