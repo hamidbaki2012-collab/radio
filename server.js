@@ -1,7 +1,7 @@
 const http = require("http");
 const https = require("https");
 
-const SHOUTCAST = "http://212.84.160.3:9923";
+const STREAM_URL = "http://212.84.160.3:9923/;";
 
 function fetch(url) {
   return new Promise((resolve) => {
@@ -15,30 +15,18 @@ function fetch(url) {
   });
 }
 
-function parse7html(text) {
-  if (!text) return { listeners: 0, status: 0 };
-
-  const parts = text.split(",");
-
-  return {
-    listeners: parseInt(parts[0]) || 0,
-    status: parseInt(parts[1]) || 0
-  };
-}
-
 const server = http.createServer(async (req, res) => {
 
   if (req.url === "/api/listeners") {
 
-    const data = await fetch(`${SHOUTCAST}/7.html?sid=1`);
+    // 🔥 test simple : stream accessible ?
+    const test = await fetch(STREAM_URL);
 
-    const parsed = parse7html(data);
+    const isOnline = test !== null;
 
-    let state = "OFFLINE";
+    let status = "OFFLINE";
 
-    if (parsed.status === 1) {
-      state = parsed.listeners > 0 ? "LIVE" : "IDLE";
-    }
+    if (isOnline) status = "LIVE";
 
     res.writeHead(200, {
       "Content-Type": "application/json",
@@ -46,8 +34,9 @@ const server = http.createServer(async (req, res) => {
     });
 
     return res.end(JSON.stringify({
-      status: state,
-      listeners: parsed.listeners
+      status,
+      listeners: 0, // ⚠️ Listen2MyRadio bloque souvent cette info
+      title: isOnline ? "En direct" : "Serveur hors ligne"
     }));
   }
 
@@ -55,8 +44,9 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(3000, () => {
-  console.log("API RUN http://localhost:3000/api/listeners");
+  console.log("API OK");
 });
+
 
 
 
