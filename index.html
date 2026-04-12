@@ -215,7 +215,26 @@ input[type=range] {
     </div>
   </div>
 </div>
-<script src="radio.js"></script>
+<script src="radio.js">
+  const radioWave = document.getElementById("radioWave");
+
+function showWave() {
+  if (radioWave) radioWave.style.display = "flex";
+}
+
+function hideWave() {
+  if (radioWave) radioWave.style.display = "none";
+}
+
+player.addEventListener("play", showWave);
+player.addEventListener("playing", showWave);
+player.addEventListener("pause", hideWave);
+player.addEventListener("error", hideWave);
+
+// sécurité au chargement
+document.addEventListener("DOMContentLoaded", hideWave);
+
+</script>
 </body>
 </html>
 
