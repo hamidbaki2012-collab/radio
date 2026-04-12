@@ -645,9 +645,13 @@ function extractTitle(text) {
 <script>
 async function getListeners() {
   try {
-    const res = await fetch("http://212.84.160.3:9923/7.html");
-    const text = await res.text();
+    const url = "http://212.84.160.3:9923/7.html";
 
+    const res = await fetch(
+      "https://api.allorigins.win/raw?url=" + encodeURIComponent(url)
+    );
+
+    const text = await res.text();
     const parts = text.split(",");
 
     const listeners = parseInt(parts[0]) || 0;
@@ -667,14 +671,9 @@ async function getListeners() {
     }
 
   } catch (err) {
-    console.error(err);
     document.getElementById("listeners").textContent = "0";
-    document.getElementById("radioStatus").textContent = "🔴 Erreur";
   }
 }
-
-setInterval(getListeners, 10000);
-getListeners();
 
 </script>
 
