@@ -1,79 +1,95 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>📻 Radio Live</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>📻 Radio Bahá'ie</title>
 
-  <style>
-    body {
-      font-family: Arial;
-      background: #1a2a6c;
-      color: white;
-      text-align: center;
-      margin: 0;
-      padding: 20px;
-    }
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, Arial;
+  background-color: #1a2a6c;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.5)),
+    url('background.jpg'),
+    url('background.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: white;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
 
-    .container {
-      max-width: 500px;
-      margin: auto;
-    }
+.container {
+  max-width: 480px;
+  margin: auto;
+}
 
-    .logo {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      background: white;
-      margin: 20px auto;
-      overflow: hidden;
-    }
+.logo-container {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 20px auto;
+  background: white;
+}
 
-    .logo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+.logo-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-    .status {
-      margin: 15px 0;
-      font-size: 16px;
-    }
+.status {
+  margin: 15px 0;
+}
 
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      display: inline-block;
-      margin-right: 6px;
-      background: red;
-    }
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+  background: red;
+}
 
-    .player {
-      margin-top: 20px;
-      padding: 15px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 12px;
-    }
+.player-box {
+  background: rgba(255,255,255,0.1);
+  padding: 20px;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+}
 
-    button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 20px;
-      background: #00d2ff;
-      color: white;
-      cursor: pointer;
-      font-size: 16px;
-    }
-  </style>
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  background: #00d2ff;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* VOLUME */
+.volume-container {
+  margin-top: 15px;
+}
+
+input[type=range] {
+  width: 100%;
+}
+
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-  <div class="logo">
-    <img src="logo.png" />
+  <div class="logo-container">
+    <img src="logo.png">
   </div>
 
   <h1>🎧 Radio Live</h1>
@@ -85,15 +101,20 @@
     👥 <span id="listeners">0</span> auditeurs
   </div>
 
-  <div class="player">
+  <div class="player-box">
 
-    <audio id="player" preload="none">
+    <audio id="player">
       <source src="https://fpsnew2.listen2myradio.com:2199/listen.php?ip=212.84.160.3&port=9923&type=s1">
     </audio>
 
     <br><br>
 
     <button onclick="togglePlay()">▶ / ⏸ Play</button>
+
+    <div class="volume-container">
+      🔊 Volume
+      <input type="range" min="0" max="100" value="70" id="volume">
+    </div>
 
   </div>
 
@@ -103,6 +124,7 @@
 
 </body>
 </html>
+
 
 
 
