@@ -35,51 +35,38 @@ if (volume) {
 // 👥 LECTURE SHOUTCAST
 async function getRadioData() {
   try {
-    const url = "https://api.allorigins.win/raw?url=" +
-      encodeURIComponent("http://212.84.160.3:9923/7.html?sid=1");
+    const res = await fetch("https://radio-42po.onrender.com/api/listeners");
+    const data = await res.json();
 
-    const res = await fetch(url);
-    const text = await res.text();
+    console.log("API:", data);
 
-    console.log("RAW:", text); // DEBUG
-
-    // 🧠 sécurité
-    if (!text || text.includes("<html")) {
-      setOffline();
-      return;
-    }
-
-    const parts = text.split(",");
-
-    const listeners = parseInt(parts[0]) || 0;
-    const streamStatus = parseInt(parts[1]) || 0;
-
-    document.getElementById("listeners").textContent = listeners;
+    document.getElementById("listeners").textContent = data.listeners;
 
     const status = document.getElementById("radioStatus");
     const dot = document.getElementById("statusDot");
 
-    if (streamStatus === 1) {
-      status.textContent = listeners > 0 ? "🟢 En direct" : "🟡 En attente";
-      dot.style.background = listeners > 0 ? "#00ff88" : "#ffcc00";
-    } else {
-      setOffline();
+    if (data.status === "LIVE") {
+      status.textContent = "🟢 En direct";
+      dot.style.background = "#00ff88";
+    }
+
+    else if (data.status === "IDLE") {
+      status.textContent = "🟡 En attente";
+      dot.style.background = "#ffcc00";
+    }
+
+    else {
+      status.textContent = "🔴 Hors ligne";
+      dot.style.background = "#ff4b4b";
     }
 
   } catch (e) {
     console.error(e);
-    setOffline();
+    document.getElementById("listeners").textContent = "0";
+    document.getElementById("radioStatus").textContent = "🔴 Hors ligne";
   }
 }
 
-// 🔴 OFFLINE SAFE
-function setOffline() {
-  document.getElementById("listeners").textContent = "0";
-  document.getElementById("radioStatus").textContent = "🔴 Hors ligne";
-  document.getElementById("statusDot").style.background = "#ff4b4b";
-}
-
-// 🔁 LOOP
 setInterval(getRadioData, 8000);
 getRadioData();
 
