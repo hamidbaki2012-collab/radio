@@ -47,11 +47,6 @@ async function getRadioData() {
   dot.style.background = "#00ff88";
   }
 
-  else if (data.status === "IDLE") {
-    status.textContent = "🟡 En attente";
-    dot.style.background = "#ffcc00";
-  }
-
   else {
   status.textContent = "🔴 Hors ligne";
   dot.style.background = "#ff4b4b";
