@@ -75,7 +75,7 @@ async function updateStats() {
 
   } catch (e) {
     setOffline();
-    listenersBox.textContent = "En direct";
+    listenersBox.textContent = "Live";
   }
 }
 
