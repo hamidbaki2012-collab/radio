@@ -1,6 +1,5 @@
 const http = require("http");
 
-// 🔗 SHOUTCAST JSON DIRECT
 const SHOUTCAST_JSON = "http://212.84.160.3:9923/stats?json=1";
 
 // ===== FETCH JSON =====
@@ -28,25 +27,31 @@ const server = http.createServer(async (req, res) => {
 
     const data = await fetchJSON(SHOUTCAST_JSON);
 
-    // 🔴 OFFLINE
+    // 🔴 SERVEUR INJOIGNABLE
     if (!data) {
       return send(res, {
         status: "OFFLINE",
         listeners: 0,
-        title: "Aucun flux"
+        title: "Serveur hors ligne"
       });
     }
 
     const listeners = data.listeners || 0;
-    const title = data.songtitle || "En direct";
+    const streamStatus = data.streamstatus; // 🔥 clé importante
+    const title = data.songtitle || "";
 
-    let status = "IDLE";
-    if (listeners > 0) status = "LIVE";
+    let status = "OFFLINE";
+
+    if (streamStatus === 1) {
+      status = listeners > 0 ? "LIVE" : "IDLE";
+    } else {
+      status = "OFFLINE";
+    }
 
     send(res, {
       status,
       listeners,
-      title
+      title: title || (status === "LIVE" ? "En direct" : "Aucun flux")
     });
   }
 
@@ -58,12 +63,13 @@ const server = http.createServer(async (req, res) => {
 // ===== RESPONSE =====
 function send(res, data) {
   res.setHeader("Content-Type", "application/json");
-  res.setHeader("Access-Control-Allow-Origin", "*"); // 🔥 important pour ton site GitHub
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.end(JSON.stringify(data));
 }
 
 // ===== START =====
 server.listen(3000, () => {
-  console.log("🚀 API prête : http://localhost:3000/api/listeners");
+  console.log("🚀 API prête : /api/listeners");
 });
+
 
