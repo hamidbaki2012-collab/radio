@@ -43,8 +43,8 @@ async function getRadioData() {
   const dot = document.getElementById("statusDot");
 
   if (data.status === "LIVE") {
-    status.textContent = "🟢 En direct";
-    dot.style.background = "#00ff88";
+  status.textContent = "🟢 En direct";
+  dot.style.background = "#00ff88";
   }
 
   else if (data.status === "IDLE") {
@@ -53,8 +53,8 @@ async function getRadioData() {
   }
 
   else {
-    status.textContent = "🔴 Hors ligne";
-    dot.style.background = "#ff4b4b";
+  status.textContent = "🔴 Hors ligne";
+  dot.style.background = "#ff4b4b";
   }
 }
 
