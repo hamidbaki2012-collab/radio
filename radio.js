@@ -33,6 +33,9 @@ async function getRadioData() {
 
     const text = await res.text();
 
+    // 🔥 DEBUG CORRECT
+    console.log("RAW DATA:", text);
+
     const parts = text.split(",");
 
     const listeners = parseInt(parts[0]) || 0;
@@ -46,26 +49,20 @@ async function getRadioData() {
     if (!status || !dot) return;
 
     if (streamStatus === 1) {
-      if (listeners > 0) {
-        status.textContent = "🟢 En direct";
-        dot.style.background = "#00ff88";
-      } else {
-        status.textContent = "🟡 En attente";
-        dot.style.background = "#ffcc00";
-      }
+      status.textContent = listeners > 0 ? "🟢 En direct" : "🟡 En attente";
+      dot.style.background = listeners > 0 ? "#00ff88" : "#ffcc00";
     } else {
       status.textContent = "🔴 Hors ligne";
       dot.style.background = "#ff4b4b";
     }
 
-  } catch (e) {
-    console.error(e);
+  } catch (err) {
+    console.error("ERROR:", err);
     document.getElementById("listeners").textContent = "0";
-    document.getElementById("radioStatus").textContent = "🔴 hors ligne";
   }
 }
 
-// 🔁 refresh
 setInterval(getRadioData, 8000);
 getRadioData();
+
 
