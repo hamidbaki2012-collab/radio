@@ -643,36 +643,23 @@ function extractTitle(text) {
 }
 
 <script>
-async function getRadioData() {
+async function getListeners() {
   try {
-    const res = await fetch("https://TON-APP.onrender.com/api/listeners");
-    const data = await res.json();
+    const res = await fetch("http://212.84.160.3:9923/7.html");
+    const text = await res.text();
 
-    document.getElementById("listeners").textContent = data.listeners;
+    const parts = text.split(",");
 
-    const statusEl = document.getElementById("radioStatus");
-    const dot = document.getElementById("statusDot");
+    document.getElementById("listeners").textContent = parts[0] || 0;
 
-    if (data.status === "OFFLINE") {
-      statusEl.textContent = "🔴 Hors ligne";
-      dot.style.background = "#ff4b4b";
-    }
-    else if (data.status === "IDLE") {
-      statusEl.textContent = "🟡 En attente";
-      dot.style.background = "#ffcc00";
-    }
-    else {
-      statusEl.textContent = "🟢 En direct";
-      dot.style.background = "#00ff88";
-    }
-
-  } catch (err) {
+  } catch {
     document.getElementById("listeners").textContent = "0";
   }
 }
 
-setInterval(getRadioData, 10000);
-getRadioData();
+setInterval(getListeners, 10000);
+getListeners();
+
 </script>
 
 }
