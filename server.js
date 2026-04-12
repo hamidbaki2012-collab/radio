@@ -34,7 +34,7 @@ function parse7html(text) {
 
 const server = http.createServer(async (req, res) => {
 
-  if (req.url === "/api/listeners") {
+  if (req.url === "https://radio-42po.onrender.com/api/listeners") {
 
     const raw = await fetch(`${STREAM}/7.html?sid=1`);
 
