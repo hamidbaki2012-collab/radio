@@ -19,6 +19,9 @@ volume.addEventListener("input", () => {
   player.volume = volume.value / 100;
 });
 
+console.log("RAW DATA:");
+console.log(text);
+
 // 👥 RADIO DATA
 async function getRadioData() {
   try {
